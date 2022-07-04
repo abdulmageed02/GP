@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-deployment
+  namespace: dev
+  labels:
+    app: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: app
+        image: 10.96.188.104:8082/node-app
+        env:
+          - name: HOST
+            value: mysql-svc
+
+          - name: USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: mysql-cred
+                key: MYSQL_USER
+
+          - name: PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql-cred
+                key: MYSQL_PASSWORD
+
+          - name: DATABASE
+            valueFrom:
+              secretKeyRef:
+                name: mysql-cred
+                key: MYSQL_DATABASE
+
+
+        
