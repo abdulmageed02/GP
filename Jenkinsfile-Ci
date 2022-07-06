@@ -1,0 +1,36 @@
+pipeline {
+
+    agent any
+
+    environment {
+        imageName = "node-app"
+        registryCredentials = "nexus"
+        registry = "10.96.188.104:8082"
+        dockerImage = ''
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                // Bulding Docker image
+                sh "docker build . -t ${registry}/node-app"
+
+
+            }
+
+
+        }
+
+    // Uploading Docker images into Nexus Registry
+    stage('Uploading to Nexus') {
+     steps{
+         script {
+             docker.withRegistry( 'http://'+registry, registryCredentials ) {
+            
+             sh "docker push ${registry}/node-app"
+          }
+        }
+      }
+    }
+    }
+}

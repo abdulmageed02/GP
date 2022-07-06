@@ -1,0 +1,36 @@
+- hosts: gcp
+  remote_user: ansible 
+  become_user: root
+  become: true
+  tasks:
+  - name: Update  apt packages
+    apt:
+          update_cache: yes
+          cache_valid_time: 86400 #One day   
+  - name: install docker
+    apt:
+        name: docker.io
+        state: present
+  - name: running docker without sudo  
+    user:
+        name: "ansible"
+        groups: docker
+        append: yes
+  - name: Add Google official GPG key
+    apt_key:
+       url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+       state: present
+  - name: Add Kubernetes Repository
+    apt_repository:
+       repo: deb http://apt.kubernetes.io/ kubernetes-xenial main 
+       state: present
+       filename: kubernetes
+       mode: 0600
+  - name: Installing Kubernetes Cluster Packages.
+    apt: 
+       name:
+         - kubectl
+       state: present
+  roles:
+    - role: gantsign.minikube
+    
